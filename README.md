@@ -7,8 +7,7 @@ In this project, we will try to use train a LSTM to make predictions on the fodd
 
 ## Crawl:
 * There are 207 such fodders, we have saved them as time series csv files.
-
-#### To get most recent 207 fodders time series price, run:
-```sh
-python3 get_player_TimeSeries_Fodder_Only.py
-```
+* To get most recent 207 fodders time series price, run:
+  ```sh
+  python3 get_player_TimeSeries_Fodder_Only.py
+  ```
