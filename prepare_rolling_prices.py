@@ -15,6 +15,13 @@ def prepare_rolling_prices(df):
 	max_price = max(pd.array(df["price"]))
 	mean_price = np.mean(pd.array(df["price"]))
 
+	# Write to File
+	f = open("utils/min_max_mean.txt", "w")
+
+	f.write("%s,%s,%s" % (str(min_price), str(max_price), str(mean_price)))
+
+	f.close()
+
 	rolling_x = []
 	rolling_y = []
 
