@@ -35,7 +35,7 @@ def prepare_rolling_prices(df):
 			rolling_y.append(this_np_array[i])
 
 
-	return pd.DataFrame(rolling_x), pd.DataFrame(rolling_y) 
+	return np.array(rolling_x), np.array(rolling_y)
 
 
 def min_max_normalize(df):
@@ -44,4 +44,4 @@ def min_max_normalize(df):
 if __name__ == '__main__':
 	training = pd.read_csv("./training_files/training.csv")
 	x, y = prepare_rolling_prices(training)
-	print(x, y)
+	print(x.shape, y.shape)
