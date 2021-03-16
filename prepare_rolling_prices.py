@@ -15,14 +15,13 @@ def prepare_rolling_prices(df):
 	max_price = max(pd.array(df["price"]))
 	mean_price = np.mean(pd.array(df["price"]))
 
-	rolling = []
-
+	rolling_x = []
+	rolling_y = []
 
 	for key, value in fodder_dict.items():
 		this_df = df.loc[df['ID'] == int(value)]["price"]
 		this_df = this_df.astype(int)
 		
-
 		# min max normalization
 		this_df = min_max_normalize(this_df)
 		this_np_array = np.array(this_df)
@@ -30,11 +29,13 @@ def prepare_rolling_prices(df):
 
 		for i in range(30, len(this_np_array)):
 			this_date = []
-			for j in range(i-30, i+1):
+			for j in range(i-30, i):
 				this_date.append(this_np_array[j])
-			rolling.append(this_date)
+			rolling_x.append(this_date)
+			rolling_y.append(this_np_array[i])
 
-	return pd.DataFrame(rolling)
+
+	return pd.DataFrame(rolling_x), pd.DataFrame(rolling_y) 
 
 
 def min_max_normalize(df):
@@ -42,4 +43,5 @@ def min_max_normalize(df):
 
 if __name__ == '__main__':
 	training = pd.read_csv("./training_files/training.csv")
-	prepare_rolling_prices(training)
+	x, y = prepare_rolling_prices(training)
+	print(x, y)
