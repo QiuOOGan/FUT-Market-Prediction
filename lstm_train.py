@@ -32,7 +32,7 @@ def trainLSTM():
 	model.add(Dense(1)) # 1 output: Price
 
 	# Train
-	epochs = 100
+	epochs = 1000
 	train_scores = []
 	test_scores = []
 	train_loss = LambdaCallback(on_epoch_end=lambda batch, logs: train_scores.append(logs['loss']))
