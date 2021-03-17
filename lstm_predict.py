@@ -55,10 +55,12 @@ def lstm_predict(ID):
 	testing = pd.read_csv("./training_files/testing.csv")
 	new = testing.loc[testing['ID'] == int(ID)]["price"]
 	new = np.array(new.astype(int))[-7:]
-	plt.plot(outputs)
-	plt.plot(new)
-
-
+	plt.ylabel("day")
+	plt.xlabel("price")
+	plt.plot(outputs,color="r", label="Predicted")
+	plt.plot(new,color="b", label="Real")
+	legend = plt.legend(loc='upper right', shadow=True, fontsize='medium')
+	legend.get_frame().set_facecolor('C0')
 
 	# plt.plot(outputs)
 	plt.show()

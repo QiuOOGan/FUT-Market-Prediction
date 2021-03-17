@@ -23,25 +23,45 @@ def trainLSTM():
 	x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
 
 	print("Data Preparation Completed")
+	epochs = 100
+	batch_size = 10
 
 	# create Model
 	model = Sequential()
-	model.add(LSTM(50, return_sequences=True, input_shape = (x_train.shape[1], 1)))  # 2 time step, 1 feature
-	model.add(LSTM(50, return_sequences = False))
-	model.add(Dense(25))
+	model.add(LSTM(50, return_sequences=False, stateful=True, batch_input_shape = (batch_size,x_train.shape[1], 1)))  # 2 time step, 1 feature
+	# model.add(LSTM(50, return_sequences = False))
+	model.add(Dense(3))
 	model.add(Dense(1)) # 1 output: Price
 
 	# Train
-	epochs = 1000
+
 	train_scores = []
 	test_scores = []
 	train_loss = LambdaCallback(on_epoch_end=lambda batch, logs: train_scores.append(logs['loss']))
 	earlystopper = EarlyStopping(monitor='loss', patience=epochs/10)
 	model.compile(optimizer=Adam(beta_1=0.9, beta_2=0.999, epsilon=1e-8), loss='mean_squared_error', metrics=[RootMeanSquaredError()])
-	test_loss = LambdaCallback(on_epoch_end=lambda batch, logs: test_scores.append(model.evaluate(x_test, y_test)[0]))
-	model.fit(x_train, y_train, batch_size=2000, epochs=epochs, callbacks=[train_loss, test_loss, earlystopper])
-	model.save('./models/my_model.h5')
+	test_loss = LambdaCallback(on_epoch_end=lambda batch, logs: test_scores.append(model.evaluate(x_test, y_test, batch_size=batch_size)[0]))
+	model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, callbacks=[train_loss, test_loss, earlystopper])
+	result = model.evaluate(x_test, y_test, batch_size=batch_size)[1]
+	model.save('./models/my_model_2.h5')
 	print("Training Completed")
+
+	plt.figure()
+
+	plt.grid()
+	plt.title("Testing RMSE: " + str(result))
+	plt.suptitle("Learning Curve")
+	plt.ylabel("loss")
+	plt.xlabel("epochs")
+	plt.ylim(top=max(train_scores), bottom=min(train_scores))
+	plt.plot(np.linspace(0, len(train_scores), len(train_scores)), train_scores, linewidth=1, color="r",
+			 label="Training loss")
+	plt.plot(np.linspace(0, len(test_scores), len(test_scores)), test_scores, linewidth=1, color="b",
+			 label="Testing loss")
+	legend = plt.legend(loc='upper right', shadow=True, fontsize='medium')
+	legend.get_frame().set_facecolor('C0')
+
+	plt.show()
 
 if __name__ == '__main__':
 	trainLSTM()
