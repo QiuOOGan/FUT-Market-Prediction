@@ -60,7 +60,8 @@ def lstm_predict(ID, name):
 
 	testing = pd.read_csv("./training_files/testing.csv")
 	new = testing.loc[testing['ID'] == int(ID)]["price"]
-	new = np.array(new.astype(int))[-30:]
+	# Testing set's first 30 days prices
+	new = np.array(new.astype(int))[:30]
 
 	axs[0].plot(x, outputs)
 	axs[0].title.set_text('Prediction')
