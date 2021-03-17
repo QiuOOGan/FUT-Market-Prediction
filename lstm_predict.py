@@ -14,7 +14,7 @@ from prepare_rolling_prices import prepare_rolling_prices
 import json
 from matplotlib import pyplot as plt
 
-def lstm_predict(ID):
+def lstm_predict(ID, name):
 	model = load_model('./models/my_model.h5')
 	min_price, max_price, mean_price = -1, -1, -1
 	with open("./utils/min_max_mean.txt", "r") as f:
@@ -43,27 +43,31 @@ def lstm_predict(ID):
 	#Recursively Predict Next 7 days prices
 	output_ = model.predict(input_, min_price, max_price, mean_price)
 	outputs = [de_normalize(output_, min_price, max_price, mean_price)]
-	for i in range(0, 7):
+	for i in range(0, 29):
 		new_input = np.append(new_input[0][-29:], output_)
 		new_input = np.reshape(np.array(new_input), (1, 30, 1))
 		# print(new_input)
+		print(new_input.shape)
 		output_ = model.predict(new_input, min_price, max_price, mean_price)
 		outputs.append(de_normalize(output_, min_price, max_price, mean_price))
 
 	print(outputs)
 
+	x = list(range(1, 31))
+
+	fig, axs = plt.subplots(2)
+	fig.suptitle(name)
+
 	testing = pd.read_csv("./training_files/testing.csv")
 	new = testing.loc[testing['ID'] == int(ID)]["price"]
-	new = np.array(new.astype(int))[-7:]
-	plt.ylabel("day")
-	plt.xlabel("price")
-	plt.plot(outputs,color="r", label="Predicted")
-	plt.plot(new,color="b", label="Real")
-	legend = plt.legend(loc='upper right', shadow=True, fontsize='medium')
-	legend.get_frame().set_facecolor('C0')
+	new = np.array(new.astype(int))[-30:]
 
-	# plt.plot(outputs)
-	plt.show()
+	axs[0].plot(x, outputs)
+	axs[0].title.set_text('Prediction')
+	axs[1].plot(x, new, label = 'Actual')
+	axs[1].title.set_text('Actual')
+
+	plt.savefig("./predictions/"+ name + ".png")
 
 def de_normalize(output_, min_price, max_price, mean_price):
 	return output_[0][0] * (max_price - min_price) + mean_price
@@ -76,5 +80,5 @@ if __name__ == '__main__':
 	fodder_dict = json.load(f)
 
 	# Sergio Busquets
-	lstm_predict(668)
-
+	for key, value in fodder_dict.items():
+		lstm_predict(value, key)
