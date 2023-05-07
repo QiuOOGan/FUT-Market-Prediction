@@ -15,3 +15,5 @@ In this project, we will try to train a LSTM to make predictions on the fodders 
   python3 get_player_TimeSeries_Fodder_Only.py
   ```
 * We will potentially scrape hour-level time series data in the future.
+
+## New:
